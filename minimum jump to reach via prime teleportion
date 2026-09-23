@@ -1,0 +1,88 @@
+int *count = calloc(maxVal + 1, sizeof(int));
+
+    for (int i = 0; i < numsSize; i++) {
+        int x = nums[i];
+
+        while (x > 1) {
+            int p = spf[x];
+            count[p]++;
+
+            while (x % p == 0)
+                x /= p;
+        }
+    }
+
+    int **indices = calloc(maxVal + 1, sizeof(int *));
+
+    for (int p = 2; p <= maxVal; p++) {
+        if (count[p] > 0)
+            indices[p] = malloc(count[p] * sizeof(int));
+
+        count[p] = 0;
+    }
+    for (int i = 0; i < numsSize; i++) {
+        int x = nums[i];
+
+        while (x > 1) {
+            int p = spf[x];
+
+            indices[p][count[p]++] = i;
+
+            while (x % p == 0)
+                x /= p;
+        }
+    }
+    int *dist = malloc(numsSize * sizeof(int));
+
+    for (int i = 0; i < numsSize; i++)
+        dist[i] = -1;
+
+    int *queue = malloc(numsSize * sizeof(int));
+    int front = 0, rear = 0;
+
+    queue[rear++] = 0;
+    dist[0] = 0;
+
+    bool *usedPrime = calloc(maxVal + 1, sizeof(bool));
+
+    while (front < rear) {
+        int i = queue[front++];
+
+        if (i == numsSize - 1)
+            break;
+
+        int nextDist = dist[i] + 1;
+        if (i > 0 && dist[i - 1] == -1) {
+            dist[i - 1] = nextDist;
+            queue[rear++] = i - 1;
+        }
+        if (i + 1 < numsSize && dist[i + 1] == -1) {
+            dist[i + 1] = nextDist;
+            queue[rear++] = i + 1;
+        }
+        int x = nums[i];
+        if (x >= 2 && spf[x] == x && !usedPrime[x]) {
+            usedPrime[x] = true;
+            for (int k = 0; k < count[x]; k++) {
+                int j = indices[x][k];
+
+                if (dist[j] == -1) {
+                    dist[j] = nextDist;
+                    queue[rear++] = j;
+                }
+            }
+        }
+    }
+    int answer = dist[numsSize - 1];
+    for (int p = 2; p <= maxVal; p++) {
+        if (indices[p] != NULL)
+            free(indices[p]);
+    }
+    free(indices);
+    free(count);
+    free(spf);
+    free(dist);
+    free(queue);
+    free(usedPrime);
+    return answer;
+}
