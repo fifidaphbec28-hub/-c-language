@@ -1,0 +1,41 @@
+char** letterCombinations(char* digits, int* returnSize) {
+   char *map[] = {
+        "", "", "abc", "def", "ghi", "jkl",
+        "mno", "pqrs", "tuv", "wxyz"
+    };
+    int n = strlen(digits);
+    int total = 1;
+    for (int i = 0; i < n; i++)
+        total *= strlen(map[digits[i] - '0']);
+    char **ans = malloc(total * sizeof(char *));
+    *returnSize = 0;
+    int size = 1;
+    for (int i = 0; i < n; i++) {
+        int newSize = size * strlen(map[digits[i] - '0']);
+        char **temp = malloc(newSize * sizeof(char *));
+        int k = 0;
+        for (int j = 0; j < size; j++) {
+            for (int x = 0; map[digits[i] - '0'][x] != '\0'; x++) {
+                temp[k] = malloc(i + 2);
+              
+                if (i == 0)
+                    temp[k][0] = '\0';
+                else
+                    strcpy(temp[k], ans[j]);
+                int len = strlen(temp[k]);
+                temp[k][len] = map[digits[i] - '0'][x];
+                temp[k][len + 1] = '\0';
+                k++;
+            }
+        }
+        if (i > 0) {
+            for (int j = 0; j < size; j++)
+                free(ans[j]);
+            free(ans);
+        }
+        ans = temp;
+        size = newSize;
+    }
+    *returnSize = size;
+    return ans;
+} 
