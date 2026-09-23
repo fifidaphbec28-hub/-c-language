@@ -1,0 +1,16 @@
+int maxRotateFunction(int* nums, int numsSize) {
+     long long sum = 0;
+    long long F = 0;
+    for (int i = 0; i < numsSize; i++) {
+        sum += nums[i];
+        F += (long long)i * nums[i];
+    }
+    long long max = F;
+    for (int k = 1; k < numsSize; k++) {
+        F = F + sum - (long long)numsSize * nums[numsSize - k];
+
+        if (F > max)
+            max = F;
+    }
+    return (int)max;
+}
