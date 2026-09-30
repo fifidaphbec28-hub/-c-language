@@ -1,0 +1,32 @@
+#include <stdlib.h>
+
+// Macro to find the maximum of two values
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
+
+// Comparator function to sort tasks by (minimum - actual) in descending order
+int compareTasks(const void* a, const void* b) {
+    int* taskA = *(int**)a;
+    int* taskB = *(int**)b;
+    
+    int diffA = taskA[1] - taskA[0]; // minimum_A - actual_A
+    int diffB = taskB[1] - taskB[0]; // minimum_B - actual_B
+    
+    // For descending order, return a positive number if B's difference is larger
+    return diffB - diffA;
+}
+int minimumEffort(int** tasks, int tasksSize, int* tasksColSize) {
+    
+    qsort(tasks, tasksSize, sizeof(int*), compareTasks);
+    
+    int current_needed = 0;
+    
+    // 2. Iterate backward through the sorted tasks to accumulate required energy
+    for (int i = tasksSize - 1; i >= 0; i--) {
+        int actual = tasks[i][0];
+        int minimum = tasks[i][1];
+        
+        current_needed = MAX(minimum, current_needed + actual);
+    }
+    
+    return current_needed;
+}
