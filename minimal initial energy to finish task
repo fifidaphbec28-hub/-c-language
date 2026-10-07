@@ -1,0 +1,27 @@
+#include <stdio.h>
+#include <stdlib.h>
+int compare(const void *a, const void *b) {
+    const int *taskA = *(const int **)a;
+    const int *taskB = *(const int **)b;
+    
+    int diffA = taskA[1] - taskA[0]; 
+    int diffB = taskB[1] - taskB[0]; 
+    return diffB - diffA;
+}
+int minimumEffort(int** tasks, int tasksSize, int* tasksColSize) {
+    qsort(tasks, tasksSize, sizeof(int*), compare);
+    int current_energy = 0;
+    int initial_energy = 0;
+    for (int i = 0; i < tasksSize; i++) {
+        int actual = tasks[i][0];
+        int minimum = tasks[i][1];
+        if (current_energy < minimum) {
+            initial_energy += (minimum - current_energy);
+            current_energy = minimum;
+        }
+        
+        current_energy -= actual;
+    }
+    
+    return initial_energy;
+}
